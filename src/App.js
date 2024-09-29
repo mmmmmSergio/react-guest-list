@@ -32,6 +32,15 @@ function GuestListApp() {
     setGuests(guests.filter((guest) => guest.id !== id)); // Remove guest by id
   };
 
+  // Function to handle toggling attending status
+  const handleToggleAttending = (id) => {
+    setGuests(
+      guests.map((guest) =>
+        guest.id === id ? { ...guest, attending: !guest.attending } : guest,
+      ),
+    );
+  };
+
   return (
     <div>
       <h1>Guest List</h1>
@@ -63,6 +72,13 @@ function GuestListApp() {
             <li>
               {guest.firstName} {guest.lastName} -{' '}
               {guest.attending ? 'Attending' : 'Not Attending'}
+              {/* Checkbox for toggling attending status */}
+              <input
+                type="checkbox"
+                checked={guest.attending}
+                onChange={() => handleToggleAttending(guest.id)} // Toggle attending status
+                aria-label={`${guest.firstName} ${guest.lastName} attending status`} // Accessible label
+              />
               {/* Remove Button */}
               <button
                 onClick={() => handleRemoveGuest(guest.id)} // Handle guest removal
