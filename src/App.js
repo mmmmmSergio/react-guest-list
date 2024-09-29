@@ -27,6 +27,11 @@ function GuestListApp() {
     }
   };
 
+  // Function to handle removing a guest
+  const handleRemoveGuest = (id) => {
+    setGuests(guests.filter((guest) => guest.id !== id)); // Remove guest by id
+  };
+
   return (
     <div>
       <h1>Guest List</h1>
@@ -37,7 +42,6 @@ function GuestListApp() {
         id="firstName"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
-        placeholder="Enter first name"
       />
 
       {/* Last Name Field */}
@@ -46,7 +50,6 @@ function GuestListApp() {
         id="lastName"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
-        placeholder="Enter last name"
         onKeyPress={handleKeyPress} // Press 'Enter' to add guest
       />
 
@@ -56,12 +59,17 @@ function GuestListApp() {
       {/* List of Guests */}
       <ul>
         {guests.map((guest) => (
-          <div key={guest.id} data-test-id="guest">
-            {' '}
-            {/* Each guest wrapped in a div */}
+          <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
             <li>
               {guest.firstName} {guest.lastName} -{' '}
               {guest.attending ? 'Attending' : 'Not Attending'}
+              {/* Remove Button */}
+              <button
+                onClick={() => handleRemoveGuest(guest.id)} // Handle guest removal
+                aria-label={`Remove ${guest.firstName} ${guest.lastName}`} // Accessible label
+              >
+                Remove
+              </button>
             </li>
           </div>
         ))}
