@@ -29,7 +29,7 @@ function GuestListApp() {
 
   return (
     <div>
-      <h1>Guest List App</h1>
+      <h1>Guest List</h1>
 
       {/* First Name Field */}
       <label htmlFor="firstName">First Name:</label>
@@ -56,10 +56,14 @@ function GuestListApp() {
       {/* List of Guests */}
       <ul>
         {guests.map((guest) => (
-          <li key={guest.id}>
-            {guest.firstName} {guest.lastName} -{' '}
-            {guest.attending ? 'Attending' : 'Not Attending'}
-          </li>
+          <div key={guest.id} data-test-id="guest">
+            {' '}
+            {/* Each guest wrapped in a div */}
+            <li>
+              {guest.firstName} {guest.lastName} -{' '}
+              {guest.attending ? 'Attending' : 'Not Attending'}
+            </li>
+          </div>
         ))}
       </ul>
     </div>
