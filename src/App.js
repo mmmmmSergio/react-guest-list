@@ -9,7 +9,7 @@ function GuestListApp() {
   const handleAddGuest = () => {
     if (firstName.trim() !== '' && lastName.trim() !== '') {
       const newGuest = {
-        id: Date.now(), // Unique ID based on timestamp
+        id: guests.length + 1, // Simple ID based on guest count
         firstName,
         lastName,
         attending: false, // Default not attending
@@ -21,7 +21,7 @@ function GuestListApp() {
   };
 
   // Function to handle pressing 'Enter' on last name input
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleAddGuest();
     }
@@ -59,11 +59,8 @@ function GuestListApp() {
         id="lastName"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
-        onKeyPress={handleKeyPress} // Press 'Enter' to add guest
+        onKeyDown={handleKeyDown} // Press 'Enter' to add guest
       />
-
-      {/* Button to add guest */}
-      <button onClick={handleAddGuest}>Add Guest</button>
 
       {/* List of Guests */}
       <ul>
