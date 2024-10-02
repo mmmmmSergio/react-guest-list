@@ -6,15 +6,19 @@ function GuestListApp() {
   const [guests, setGuests] = useState([]); // State to store the list of guests
   const [firstName, setFirstName] = useState(''); // State to store the first name input
   const [lastName, setLastName] = useState(''); // State to store the last name input
+  const [isLoading, setIsLoading] = useState(true); // State to handle loading
 
   // Function to fetch all guests from the API
   const fetchGuests = async () => {
+    setIsLoading(true); // Set loading to true when fetching guests
     try {
       const response = await fetch(`${API_URL}/guests`); // Fetching guest list from API
       const data = await response.json();
       setGuests(data); // Populate the state with the data fetched from the API
+      setIsLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       console.error('Error fetching guests:', error);
+      setIsLoading(false); // Even in case of error, stop loading
     }
   };
 
@@ -102,50 +106,59 @@ function GuestListApp() {
     <div>
       <h1>Guest List</h1>
 
-      {/* First Name Field */}
-      <label htmlFor="firstName">First Name:</label>
-      <input
-        id="firstName"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
+      {/* Loading Indicator */}
+      {isLoading ? (
+        <p>Loading...</p> // Show loading message when data is being fetched
+      ) : (
+        <div>
+          {/* First Name Field */}
+          <label htmlFor="firstName">First Name:</label>
+          <input
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            disabled={isLoading} // Disable input while loading
+          />
 
-      {/* Last Name Field */}
-      <label htmlFor="lastName">Last Name:</label>
-      <input
-        id="lastName"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        onKeyDown={handleKeyDown} // Handle 'Enter' press to add guest
-      />
+          {/* Last Name Field */}
+          <label htmlFor="lastName">Last Name:</label>
+          <input
+            id="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            onKeyDown={handleKeyDown} // Handle 'Enter' press to add guest
+            disabled={isLoading} // Disable input while loading
+          />
 
-      {/* List of Guests */}
-      <ul>
-        {guests.map((guest) => (
-          <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
-            <li>
-              {guest.firstName} {guest.lastName} - {/* Status Label */}
-              <span>
-                {guest.attending ? 'Attending' : 'Not attending'}
-              </span>{' '}
-              {/* Attending Checkbox */}
-              <input
-                type="checkbox"
-                checked={guest.attending}
-                onChange={() => handleToggleAttending(guest)} // Toggle attending status
-                aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-              />{' '}
-              {/* Remove Button */}
-              <button
-                aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                onClick={() => handleDeleteGuest(guest.id)}
-              >
-                Remove
-              </button>
-            </li>
-          </div>
-        ))}
-      </ul>
+          {/* List of Guests */}
+          <ul>
+            {guests.map((guest) => (
+              <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
+                <li>
+                  {guest.firstName} {guest.lastName} - {/* Status Label */}
+                  <span>
+                    {guest.attending ? 'Attending' : 'Not attending'}
+                  </span>{' '}
+                  {/* Attending Checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={guest.attending}
+                    onChange={() => handleToggleAttending(guest)} // Toggle attending status
+                    aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                  />{' '}
+                  {/* Remove Button */}
+                  <button
+                    aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                    onClick={() => handleDeleteGuest(guest.id)}
+                  >
+                    Remove
+                  </button>
+                </li>
+              </div>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
