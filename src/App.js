@@ -1,44 +1,101 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+const API_URL = 'http://localhost:4000'; // Base URL for your locally running API
 
 function GuestListApp() {
   const [guests, setGuests] = useState([]); // State to store the list of guests
   const [firstName, setFirstName] = useState(''); // State to store the first name input
   const [lastName, setLastName] = useState(''); // State to store the last name input
 
-  // Function to handle adding a new guest
-  const handleAddGuest = () => {
-    if (firstName.trim() !== '' && lastName.trim() !== '') {
-      const newGuest = {
-        id: guests.length + 1, // Simple ID based on guest count
-        firstName,
-        lastName,
-        attending: false, // Default not attending
-      };
-      setGuests([...guests, newGuest]);
-      setFirstName(''); // Clear input fields
-      setLastName(''); // Clear input fields
+  // Function to fetch all guests from the API
+  const fetchGuests = async () => {
+    try {
+      const response = await fetch(`${API_URL}/guests`); // Fetching guest list from API
+      const data = await response.json();
+      setGuests(data); // Populate the state with the data fetched from the API
+    } catch (error) {
+      console.error('Error fetching guests:', error);
     }
   };
 
-  // Function to handle pressing 'Enter' on last name input
+  // Fetch all guests on component mount
+  useEffect(() => {
+    fetchGuests(); // Fetch guests when component loads
+  }, []);
+
+  // Function to add a new guest to the API
+  const handleAddGuest = async () => {
+    if (firstName.trim() !== '' && lastName.trim() !== '') {
+      try {
+        const newGuest = {
+          firstName,
+          lastName,
+        };
+        const response = await fetch(`${API_URL}/guests`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newGuest),
+        });
+        const data = await response.json();
+
+        // Update the local state with the new guest
+        setGuests([...guests, data]);
+        setFirstName(''); // Clear input fields
+        setLastName(''); // Clear input fields
+      } catch (error) {
+        console.error('Error adding guest:', error);
+      }
+    }
+  };
+
+  // Function to toggle the attending status of a guest and update the API
+  const handleToggleAttending = async (guest) => {
+    const updatedGuest = { ...guest, attending: !guest.attending };
+
+    // Update local state for immediate UI feedback
+    setGuests((prevGuests) =>
+      prevGuests.map((g) => (g.id === guest.id ? updatedGuest : g)),
+    );
+
+    // Send the updated guest to the API
+    try {
+      const response = await fetch(`${API_URL}/guests/${guest.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ attending: updatedGuest.attending }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update guest');
+      }
+    } catch (error) {
+      console.error('Error updating guest attending status:', error);
+    }
+  };
+
+  // Function to delete a guest
+  const handleDeleteGuest = async (guestId) => {
+    try {
+      await fetch(`${API_URL}/guests/${guestId}`, {
+        method: 'DELETE',
+      });
+
+      // Remove the guest from the local state
+      setGuests((prevGuests) => prevGuests.filter((g) => g.id !== guestId));
+    } catch (error) {
+      console.error('Error deleting guest:', error);
+    }
+  };
+
+  // Function to handle pressing 'Enter' in the last name input
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      handleAddGuest();
+      handleAddGuest(); // Trigger guest addition on Enter press
     }
-  };
-
-  // Function to handle removing a guest
-  const handleRemoveGuest = (id) => {
-    setGuests(guests.filter((guest) => guest.id !== id)); // Remove guest by id
-  };
-
-  // Function to handle toggling attending status
-  const handleToggleAttending = (id) => {
-    setGuests(
-      guests.map((guest) =>
-        guest.id === id ? { ...guest, attending: !guest.attending } : guest,
-      ),
-    );
   };
 
   return (
@@ -59,7 +116,7 @@ function GuestListApp() {
         id="lastName"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
-        onKeyDown={handleKeyDown} // Press 'Enter' to add guest
+        onKeyDown={handleKeyDown} // Handle 'Enter' press to add guest
       />
 
       {/* List of Guests */}
@@ -67,19 +124,21 @@ function GuestListApp() {
         {guests.map((guest) => (
           <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
             <li>
-              {guest.firstName} {guest.lastName} -{' '}
-              {guest.attending ? 'Attending' : 'Not Attending'}
-              {/* Checkbox for toggling attending status */}
+              {guest.firstName} {guest.lastName} - {/* Status Label */}
+              <span>
+                {guest.attending ? 'Attending' : 'Not attending'}
+              </span>{' '}
+              {/* Attending Checkbox */}
               <input
                 type="checkbox"
                 checked={guest.attending}
-                onChange={() => handleToggleAttending(guest.id)} // Toggle attending status
-                aria-label={`${guest.firstName} ${guest.lastName} attending status`} // Accessible label
-              />
+                onChange={() => handleToggleAttending(guest)} // Toggle attending status
+                aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+              />{' '}
               {/* Remove Button */}
               <button
-                onClick={() => handleRemoveGuest(guest.id)} // Handle guest removal
-                aria-label={`Remove ${guest.firstName} ${guest.lastName}`} // Accessible label
+                aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                onClick={() => handleDeleteGuest(guest.id)}
               >
                 Remove
               </button>
