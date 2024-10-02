@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:4000'; // Base URL for your locally running API
+const API_URL = 'https://8vkwhz-4000.csb.app'; // Base URL for your locally running API
 
 function GuestListApp() {
   const [guests, setGuests] = useState([]); // State to store the list of guests
@@ -15,16 +15,22 @@ function GuestListApp() {
       const response = await fetch(`${API_URL}/guests`); // Fetching guest list from API
       const data = await response.json();
       setGuests(data); // Populate the state with the data fetched from the API
-      setIsLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       console.error('Error fetching guests:', error);
-      setIsLoading(false); // Even in case of error, stop loading
+    } finally {
+      setIsLoading(false); // Always set loading to false after fetching data
     }
   };
 
   // Fetch all guests on component mount
   useEffect(() => {
-    fetchGuests(); // Fetch guests when component loads
+    const loadGuests = async () => {
+      await fetchGuests(); // Await the async fetchGuests call
+    };
+
+    loadGuests().catch((error) => {
+      console.error('Error loading guests:', error);
+    }); // Handle errors to satisfy ESLint
   }, []);
 
   // Function to add a new guest to the API
@@ -96,9 +102,9 @@ function GuestListApp() {
   };
 
   // Function to handle pressing 'Enter' in the last name input
-  const handleKeyDown = (e) => {
+  const handleKeyDown = async (e) => {
     if (e.key === 'Enter') {
-      handleAddGuest(); // Trigger guest addition on Enter press
+      await handleAddGuest(); // Await the async add guest function to satisfy ESLint
     }
   };
 
