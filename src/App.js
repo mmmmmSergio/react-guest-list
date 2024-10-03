@@ -113,7 +113,7 @@ function GuestListApp() {
       <h1>Guest List</h1>
 
       {/* First Name Field */}
-      <label htmlFor="firstName">First Name:</label>
+      <label htmlFor="firstName">First name:</label>
       <input
         id="firstName"
         value={firstName}
@@ -122,7 +122,7 @@ function GuestListApp() {
       />
 
       {/* Last Name Field */}
-      <label htmlFor="lastName">Last Name:</label>
+      <label htmlFor="lastName">Last name:</label>
       <input
         id="lastName"
         value={lastName}
