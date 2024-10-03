@@ -113,7 +113,7 @@ function GuestListApp() {
       <h1>Guest List</h1>
 
       {/* First Name Field */}
-      <label htmlFor="firstName">First name:</label>
+      <label htmlFor="firstName">First Name:</label>
       <input
         id="firstName"
         value={firstName}
@@ -122,7 +122,7 @@ function GuestListApp() {
       />
 
       {/* Last Name Field */}
-      <label htmlFor="lastName">Last name:</label>
+      <label htmlFor="lastName">Last Name:</label>
       <input
         id="lastName"
         value={lastName}
@@ -137,7 +137,7 @@ function GuestListApp() {
       {/* List of Guests */}
       <ul>
         {guests.map((guest) => (
-          <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
+          <div key={`guest-${guest.id}`} data-test-id="guest">
             <li>
               {guest.firstName} {guest.lastName} - {/* Status Label */}
               <span>
