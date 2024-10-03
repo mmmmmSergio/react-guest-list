@@ -112,59 +112,55 @@ function GuestListApp() {
     <div>
       <h1>Guest List</h1>
 
+      {/* First Name Field */}
+      <label htmlFor="firstName">First Name:</label>
+      <input
+        id="firstName"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        disabled={isLoading} // Keep visible but disabled while loading
+      />
+
+      {/* Last Name Field */}
+      <label htmlFor="lastName">Last Name:</label>
+      <input
+        id="lastName"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        onKeyDown={handleKeyDown} // Handle 'Enter' press to add guest
+        disabled={isLoading} // Keep visible but disabled while loading
+      />
+
       {/* Loading Indicator */}
-      {isLoading ? (
-        <p>Loading...</p> // Show loading message when data is being fetched
-      ) : (
-        <div>
-          {/* First Name Field */}
-          <label htmlFor="firstName">First Name:</label>
-          <input
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            disabled={isLoading} // Disable input while loading
-          />
+      {isLoading && <p>Loading...</p>}
 
-          {/* Last Name Field */}
-          <label htmlFor="lastName">Last Name:</label>
-          <input
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            onKeyDown={handleKeyDown} // Handle 'Enter' press to add guest
-            disabled={isLoading} // Disable input while loading
-          />
-
-          {/* List of Guests */}
-          <ul>
-            {guests.map((guest) => (
-              <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
-                <li>
-                  {guest.firstName} {guest.lastName} - {/* Status Label */}
-                  <span>
-                    {guest.attending ? 'Attending' : 'Not attending'}
-                  </span>{' '}
-                  {/* Attending Checkbox */}
-                  <input
-                    type="checkbox"
-                    checked={guest.attending}
-                    onChange={() => handleToggleAttending(guest)} // Toggle attending status
-                    aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-                  />{' '}
-                  {/* Remove Button */}
-                  <button
-                    aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                    onClick={() => handleDeleteGuest(guest.id)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              </div>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* List of Guests */}
+      <ul>
+        {guests.map((guest) => (
+          <div key={`guest-${guest.id}`} data-test-id={`guest-${guest.id}`}>
+            <li>
+              {guest.firstName} {guest.lastName} - {/* Status Label */}
+              <span>
+                {guest.attending ? 'Attending' : 'Not attending'}
+              </span>{' '}
+              {/* Attending Checkbox */}
+              <input
+                type="checkbox"
+                checked={guest.attending}
+                onChange={() => handleToggleAttending(guest)} // Toggle attending status
+                aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+              />{' '}
+              {/* Remove Button */}
+              <button
+                aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                onClick={() => handleDeleteGuest(guest.id)}
+              >
+                Remove
+              </button>
+            </li>
+          </div>
+        ))}
+      </ul>
     </div>
   );
 }
